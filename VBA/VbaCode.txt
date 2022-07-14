@@ -1,0 +1,42 @@
+'Chrome Driver
+'Selenium Basic
+'Selenium Wrapper
+
+Option Explicit
+Dim driver As New WebDriver
+Dim keys As New SeleniumWrapper.keys
+ 
+
+Sub SendDataUsingExcel()
+
+
+Dim LastRow As Long
+Dim filepath As String, myMessage As String
+Dim i As Integer
+Dim strPhoneNumber As String
+
+
+driver.Start "chrome"
+LastRow = Range("A" & Rows.Count).End(xlUp).Row
+For i = 2 To LastRow
+strPhoneNumber = Sheets("Data").Cells(i, 1).Value
+myMessage = Sheets("Data").Cells(i, 2).Value
+filepath = Sheets("Data").Cells(i, 3).Value
+driver.Get "https://web.whatsapp.com/send?phone=" & strPhoneNumber & "&text=" & myMessage
+driver.Window.Maximize
+
+driver.Wait 90000
+
+driver.FindElementByXPath("//*[@data-testid='send']").Click
+driver.FindElementByXPath("//div[@title='Attach']").Click
+driver.Wait 20000
+driver.FindElementByXPath("//input[@accept='image/*,video/mp4,video/3gpp,video/quicktime']").SendKeys (filepath)
+driver.Wait 20000 ' this wait time depends on the size of your file max 64 mb
+driver.FindElementByXPath("//span[@data-icon = 'send']").Click
+driver.Wait 50000
+driver.SendKeys (keys.Enter)
+Next i
+
+End Sub
+
+
